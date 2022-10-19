@@ -19,7 +19,12 @@ typedef struct {
     int col;
 } Position;
 
-void scan_vertical(char matrix[MATRIX_SIZE][MATRIX_SIZE], char scan_word[MATRIX_SIZE], VerticalDirection dir) {
+typedef struct {
+    int found;
+    Position first_pos;
+} ScanResult;
+
+ScanResult scan_vertical(char matrix[MATRIX_SIZE][MATRIX_SIZE], char scan_word[MATRIX_SIZE], VerticalDirection dir) {
 	
 }
 
