@@ -1,19 +1,16 @@
+#include <stdbool.h>
 #include <stdio.h>
-#include<stdbool.h>
 #include <string.h>
 
-#define MATRIX_SIZE 3
+#define MATRIX_SCALE 7
 #define MAX_WORDS 1
 
 typedef enum {
+    RIGHT,
+    LEFT,
     UP,
     DOWN,
-} VerticalDirection;
-
-typedef enum {
-    LEFT,
-    RIGHT,
-} HorizontalDirection;
+} Direction;
 
 typedef struct {
     int row;
@@ -23,37 +20,78 @@ typedef struct {
 typedef struct {
     int found;
     Position first_pos;
-} ScanResult;
+    Position last_pos;
+} FindFirstResult;
 
-// TODO: What if there are 2 occurrences of scan_word in a single vertical line?
-// TODO: Make use of dir.
-ScanResult scan_vertical(char matrix[MATRIX_SIZE][MATRIX_SIZE], char scan_word[MATRIX_SIZE], int col, VerticalDirection dir) {
-    int count = 0;
+void display_find_first_result(FindFirstResult res) {
+    char found[6];
+    strcpy(found, res.found == true ? "true" : "false");
 
-    for (int i = 0; scan_word[i] != '\0'; i++) {
-        char ch = matrix[i][col];
-        char scan_ch = scan_word[i];
+    printf(
+        "Found: %s\n"
+        "FirstPos: {row: %i, col: %i}\n"
+        "LastPos: {row: %i, col: %i}\n",
+        found,
+        res.first_pos.row,
+        res.first_pos.col,
+        res.last_pos.row,
+        res.last_pos.col);
+}
 
-        if (ch != scan_ch) break;
+// TODO: Make those ternaries more readable.
+FindFirstResult find_first(char matrix[MATRIX_SCALE][MATRIX_SCALE], char word[], Position start_pos, Direction dir) {
+    int match_combo = 0;
+    int word_len = strlen(word);
+    Position first_pos;
+    FindFirstResult res = {.found = false};
 
-        count++;
+    for (int i = dir == DOWN || dir == UP ? start_pos.row : start_pos.col;
+         dir == DOWN || dir == RIGHT ? i < MATRIX_SCALE : i >= 0;
+         dir == DOWN || dir == RIGHT ? i++ : i--)
+    {
+        const Position pos = {.row = dir == DOWN || dir == UP ? i : start_pos.row,
+                              .col = dir == DOWN || dir == UP ? start_pos.col : i};
+        const char ch = matrix[pos.row][pos.col];
+
+        if (ch == word[match_combo]) {
+            match_combo++;
+
+            if (match_combo == 1) {
+                first_pos = pos;
+            }
+
+            if (match_combo == word_len) {
+                res.found = true;
+                res.first_pos = first_pos;
+                res.last_pos = pos;
+
+                break;
+            }
+        } else {
+            match_combo = 0;
+        }
     }
 
-    ScanResult res;
     return res;
 }
 
 int main() {
-    char matrix[MATRIX_SIZE][MATRIX_SIZE] = {
-        {'F', 'O', 'O'},
-        {'O', 'H', 'A'},
-        {'O', 'J', 'S'},
+    char matrix[MATRIX_SCALE][MATRIX_SCALE] = {
+        {'F', 'O', 'O', 'X', 'L', 'C', 'Z'},
+        {'O', 'H', 'A', 'O', 'O', 'F', 'A'},
+        {'O', 'J', 'S', 'I', 'O', 'D', 'F'},
+        {'X', 'F', 'O', 'O', 'H', 'E', 'L'},
+        {'F', 'O', 'L', 'C', 'S', 'B', 'B'},
+        {'O', 'O', 'F', 'J', 'C', 'Q', 'P'},
+        {'O', 'K', 'P', 'F', 'O', 'A', 'Z'},
     };
 
-    char words[MAX_WORDS][MATRIX_SIZE + 1] = {"FOO"};
+    char words[MAX_WORDS][MATRIX_SCALE + 1] = {"FOO"};
 
-    VerticalDirection dir = DOWN;
-    scan_vertical(matrix, words[0], 0, dir);
+    Position start_pos = {.row = 1, .col = 6};
+    Direction dir = LEFT;
+    FindFirstResult res = find_first(matrix, words[0], start_pos, dir);
+    display_find_first_result(res);
 
     return 0;
 }
