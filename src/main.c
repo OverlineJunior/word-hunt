@@ -23,6 +23,16 @@ typedef struct {
     Position last_pos;
 } FindFirstResult;
 
+typedef struct {
+    char word[MATRIX_SCALE];
+    int count;
+} WordAndCount;
+
+typedef struct {
+    WordAndCount word_and_counts[MAX_WORDS];
+    int word_count;
+} MatrixData;
+
 void display_find_first_result(FindFirstResult res) {
     char found[6];
     strcpy(found, res.found == true ? "true" : "false");
@@ -38,7 +48,14 @@ void display_find_first_result(FindFirstResult res) {
         res.last_pos.col);
 }
 
-FindFirstResult find_first(char matrix[MATRIX_SCALE][MATRIX_SCALE], char word[], Position start_pos, Direction dir) {
+void display_matrix_data(MatrixData data) {
+    for (int i = 0; i < data.word_count; i++) {
+        const WordAndCount w_and_c = data.word_and_counts[i];
+        printf("%s: %i\n", w_and_c.word, w_and_c.count);
+    }
+}
+
+FindFirstResult find_first(char word[], char matrix[MATRIX_SCALE][MATRIX_SCALE], Position start_pos, Direction dir) {
     int match_combo = 0;
     int word_len = strlen(word);
     Position first_pos;
@@ -78,6 +95,10 @@ FindFirstResult find_first(char matrix[MATRIX_SCALE][MATRIX_SCALE], char word[],
     return res;
 }
 
+MatrixData get_matrix_data(char matrix[MATRIX_SCALE][MATRIX_SCALE], char words[MAX_WORDS][MATRIX_SCALE + 1]) {
+    // TODO:
+}
+
 int main() {
     char matrix[MATRIX_SCALE][MATRIX_SCALE] = {
         {'F', 'O', 'O', 'X', 'L', 'C', 'Z'},
@@ -91,10 +112,8 @@ int main() {
 
     char words[MAX_WORDS][MATRIX_SCALE + 1] = {"FOO"};
 
-    Position start_pos = {.row = 1, .col = 6};
-    Direction dir = LEFT;
-    FindFirstResult res = find_first(matrix, words[0], start_pos, dir);
-    display_find_first_result(res);
+    const MatrixData data = get_matrix_data(matrix, words);
+    display_matrix_data(data);
 
     return 0;
 }
