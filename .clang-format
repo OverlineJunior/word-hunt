@@ -3,7 +3,7 @@ BasedOnStyle: Google
 BinPackArguments: 'false'
 BinPackParameters: 'false'
 BreakBeforeBraces: Custom
-ColumnLimit: '120'
+ColumnLimit: '130'
 Cpp11BracedListStyle: 'true'
 IndentWidth: '4'
 SpaceBeforeParens: ControlStatements
