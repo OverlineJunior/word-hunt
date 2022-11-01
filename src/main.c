@@ -55,7 +55,7 @@ void display_matrix_data(MatrixData data) {
     }
 }
 
-FindFirstResult find_first(char word[], char matrix[MATRIX_SCALE][MATRIX_SCALE], Position start_pos, Direction dir) {
+FindFirstResult find_first(char word[], Position start_pos, Direction dir, char matrix[MATRIX_SCALE][MATRIX_SCALE]) {
     int match_combo = 0;
     int word_len = strlen(word);
     Position first_pos;
