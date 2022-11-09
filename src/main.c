@@ -45,7 +45,8 @@ void display_find_first_result(FindFirstResult res) {
         res.first_pos.row,
         res.first_pos.col,
         res.last_pos.row,
-        res.last_pos.col);
+        res.last_pos.col
+    );
 }
 
 void display_matrix_data(MatrixData data) {
@@ -55,7 +56,12 @@ void display_matrix_data(MatrixData data) {
     }
 }
 
-FindFirstResult find_first(char word[], Position start_pos, Direction dir, char matrix[MATRIX_SCALE][MATRIX_SCALE]) {
+FindFirstResult find_first(
+    char word[],
+    Position start_pos,
+    Direction dir,
+    char matrix[MATRIX_SCALE][MATRIX_SCALE]
+) {
     int match_combo = 0;
     int word_len = strlen(word);
     Position first_pos;
@@ -64,13 +70,16 @@ FindFirstResult find_first(char word[], Position start_pos, Direction dir, char 
     // Init: if direction is vertical, start from start_pos.row since we will be moving by rows; else, move by col.
     // Condition: if direction is down or right, use a condition that accepts increasing row or col; else, decreasing row or col.
     // Increment: going down or right means increasing row or col while up or left means decreasing it.
-    for (int i = dir == DOWN || dir == UP ? start_pos.row : start_pos.col;
-         dir == DOWN || dir == RIGHT ? i < MATRIX_SCALE : i >= 0;
-         dir == DOWN || dir == RIGHT ? i++ : i--)
-    {
+    for (
+        int i = dir == DOWN || dir == UP ? start_pos.row : start_pos.col;
+        dir == DOWN || dir == RIGHT ? i < MATRIX_SCALE : i >= 0;
+        dir == DOWN || dir == RIGHT ? i++ : i--
+    ) {
         // If direction is vertical, move by row, while the col is constant; else, move by col, while the row is constant.
-        const Position pos = {.row = dir == DOWN || dir == UP ? i : start_pos.row,
-                              .col = dir == DOWN || dir == UP ? start_pos.col : i};
+        const Position pos = {
+            .row = dir == DOWN || dir == UP ? i : start_pos.row,
+            .col = dir == DOWN || dir == UP ? start_pos.col : i
+        };
         const char ch = matrix[pos.row][pos.col];
 
         if (ch == word[match_combo]) {
@@ -95,7 +104,10 @@ FindFirstResult find_first(char word[], Position start_pos, Direction dir, char 
     return res;
 }
 
-MatrixData get_matrix_data(char matrix[MATRIX_SCALE][MATRIX_SCALE], char words[MAX_WORDS][MATRIX_SCALE + 1]) {
+MatrixData get_matrix_data(
+    char matrix[MATRIX_SCALE][MATRIX_SCALE],
+    char words[MAX_WORDS][MATRIX_SCALE + 1]
+) {
     // TODO:
 }
 
