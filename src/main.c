@@ -108,18 +108,60 @@ MatrixData get_matrix_data(
     char matrix[MATRIX_SCALE][MATRIX_SCALE],
     char words[MAX_WORDS][MATRIX_SCALE + 1]
 ) {
-    // TODO:
+    const int last_index = MATRIX_SCALE - 1;
+    MatrixData data;
+    Position pos = {0, 0};
+    Direction dir = DOWN;
+
+    for (int i = 0; i < MAX_WORDS; i++) {
+        char word[MATRIX_SCALE + 1];
+        strcpy(word, words[i]);
+        WordAndCount w_and_c = {.count = 0};
+        strcpy(w_and_c.word, word);
+
+        // NOTE: Assuming direction is either DOWN or UP.
+        while (true) {
+            FindFirstResult res = find_first(word, pos, dir, matrix);
+            const int finishing_row = dir == DOWN ? last_index : 0;
+            const int is_dir_finished = res.found ? res.last_pos.row == finishing_row : true;
+            const int is_scan_finished = is_dir_finished && dir == UP && pos.col == last_index;
+
+            if (res.found) {
+                w_and_c.count++;
+            }
+
+            if (is_scan_finished) break;
+
+            if (is_dir_finished) {
+                if (dir == UP) {
+                    pos.row = 0;
+                    pos.col++;
+                    dir = DOWN;
+                } else {
+                    pos.row = last_index;
+                    dir = UP;
+                }
+            } else {
+                pos.row = res.last_pos.row + 1;
+            }
+        }
+
+        data.word_and_counts[i] = w_and_c;
+        data.word_count++;
+    }
+
+    return data;
 }
 
 int main() {
     char matrix[MATRIX_SCALE][MATRIX_SCALE] = {
-        {'F', 'O', 'O', 'X', 'L', 'C', 'Z'},
-        {'O', 'H', 'A', 'O', 'O', 'F', 'A'},
+        {'F', 'O', 'O', 'X', 'L', 'C', 'O'},
+        {'O', 'H', 'A', 'O', 'O', 'F', 'O'},
         {'O', 'J', 'S', 'I', 'O', 'D', 'F'},
         {'X', 'F', 'O', 'O', 'H', 'E', 'L'},
-        {'F', 'O', 'L', 'C', 'S', 'B', 'B'},
-        {'O', 'O', 'F', 'J', 'C', 'Q', 'P'},
-        {'O', 'K', 'P', 'F', 'O', 'A', 'Z'},
+        {'F', 'O', 'L', 'C', 'S', 'B', 'F'},
+        {'O', 'O', 'F', 'J', 'C', 'Q', 'O'},
+        {'O', 'K', 'P', 'F', 'O', 'A', 'O'},
     };
 
     char words[MAX_WORDS][MATRIX_SCALE + 1] = {"FOO"};
