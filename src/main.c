@@ -165,7 +165,7 @@ int main() {
 
     char words[MAX_WORDS][MATRIX_SCALE + 1] = {"FOO"};
 
-    const MatrixData data = get_matrix_data(matrix, words);
+    const MatrixData data = get_vertical_matrix_data(matrix, words);
     display_matrix_data(data);
 
     return 0;
