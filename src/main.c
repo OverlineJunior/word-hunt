@@ -1,3 +1,5 @@
+// NOTE: For now, it is being assumed that the amount of unique words is equal to MAX_WORDS.
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -24,13 +26,18 @@ typedef struct {
 } FindFirstResult;
 
 typedef struct {
-    char word[MATRIX_SCALE];
-    int count;
-} WordAndCount;
+	Position first_pos;
+	Direction dir;
+} Encounter;
 
 typedef struct {
-    WordAndCount word_and_counts[MAX_WORDS];
-    int word_count;
+    char word[MATRIX_SCALE + 1];
+    int count;
+    Encounter encounters[MATRIX_SCALE * MATRIX_SCALE];
+} WordData;
+
+typedef struct {
+    WordData word_datas[MAX_WORDS];
 } MatrixData;
 
 void display_find_first_result(FindFirstResult res) {
@@ -49,10 +56,21 @@ void display_find_first_result(FindFirstResult res) {
     );
 }
 
-void display_matrix_data(MatrixData data) {
-    for (int i = 0; i < data.word_count; i++) {
-        const WordAndCount w_and_c = data.word_and_counts[i];
-        printf("%s: %i\n", w_and_c.word, w_and_c.count);
+void display_matrix_data(MatrixData matrix_data) {
+    for (int i = 0; i < MAX_WORDS; i++) {
+        const WordData word_data = matrix_data.word_datas[i];
+        printf("'%s' foi encontrado %i vezes:\n", word_data.word, word_data.count);
+
+        for (int j = 0; j < word_data.count; j++) {
+            const Encounter enc = word_data.encounters[j];
+
+            char dir_str[11];
+            strcpy(dir_str, enc.dir == DOWN || enc.dir == UP ? "Vertical" : "Horizontal");
+
+            printf("%u. 1a posicao: (%u, %u)   Direcao: %s\n", j + 1, enc.first_pos.row, enc.first_pos.col, dir_str);
+        }
+
+        printf("\n");
     }
 }
 
@@ -109,15 +127,16 @@ MatrixData get_vertical_matrix_data(
     char words[MAX_WORDS][MATRIX_SCALE + 1]
 ) {
     const int last_index = MATRIX_SCALE - 1;
-    MatrixData data;
+    MatrixData matrix_data;
     Position pos = {0, 0};
     Direction dir = DOWN;
 
     for (int i = 0; i < MAX_WORDS; i++) {
         char word[MATRIX_SCALE + 1];
         strcpy(word, words[i]);
-        WordAndCount w_and_c = {.count = 0};
-        strcpy(w_and_c.word, word);
+
+        WordData word_data = {.count = 0};
+        strcpy(word_data.word, word);
 
         while (true) {
             FindFirstResult res = find_first(word, pos, dir, matrix);
@@ -126,7 +145,10 @@ MatrixData get_vertical_matrix_data(
             const int is_scan_finished = is_dir_finished && dir == UP && pos.col == last_index;
 
             if (res.found) {
-                w_and_c.count++;
+                Encounter enc = {res.first_pos, dir};
+                word_data.encounters[word_data.count] = enc;
+
+                word_data.count++;
             }
 
             if (is_scan_finished) break;
@@ -145,11 +167,10 @@ MatrixData get_vertical_matrix_data(
             }
         }
 
-        data.word_and_counts[i] = w_and_c;
-        data.word_count++;
+        matrix_data.word_datas[i] = word_data;
     }
 
-    return data;
+    return matrix_data;
 }
 
 int main() {
