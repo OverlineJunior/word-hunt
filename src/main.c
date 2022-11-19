@@ -104,7 +104,7 @@ FindFirstResult find_first(
     return res;
 }
 
-MatrixData get_matrix_data(
+MatrixData get_vertical_matrix_data(
     char matrix[MATRIX_SCALE][MATRIX_SCALE],
     char words[MAX_WORDS][MATRIX_SCALE + 1]
 ) {
@@ -119,7 +119,6 @@ MatrixData get_matrix_data(
         WordAndCount w_and_c = {.count = 0};
         strcpy(w_and_c.word, word);
 
-        // NOTE: Assuming direction is either DOWN or UP.
         while (true) {
             FindFirstResult res = find_first(word, pos, dir, matrix);
             const int finishing_row = dir == DOWN ? last_index : 0;
