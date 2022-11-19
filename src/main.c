@@ -173,6 +173,64 @@ MatrixData get_vertical_matrix_data(
     return matrix_data;
 }
 
+MatrixData get_horizontal_matrix_data(
+    char matrix[MATRIX_SCALE][MATRIX_SCALE],
+    char words[MAX_WORDS][MATRIX_SCALE + 1]
+) {
+    const int last_index = MATRIX_SCALE - 1;
+    MatrixData matrix_data;
+    Position pos = {0, 0};
+    Direction dir = RIGHT;
+
+    for (int i = 0; i < MAX_WORDS; i++) {
+        char word[MATRIX_SCALE + 1];
+        strcpy(word, words[i]);
+
+        WordData word_data = {.count = 0};
+        strcpy(word_data.word, word);
+
+        while (true) {
+            FindFirstResult res = find_first(word, pos, dir, matrix);
+            const int finishing_col = dir == RIGHT ? last_index : 0;
+            const int is_dir_finished = res.found ? res.last_pos.col == finishing_col : true;
+            const int is_scan_finished = is_dir_finished && dir == LEFT && pos.row == last_index;
+
+            if (res.found) {
+                Encounter enc = {res.first_pos, dir};
+                word_data.encounters[word_data.count] = enc;
+
+                word_data.count++;
+            }
+
+            if (is_scan_finished) break;
+
+            if (is_dir_finished) {
+                if (dir == LEFT) {
+                    pos.row++;
+                    pos.col = 0;
+                    dir = RIGHT;
+                } else {
+                    pos.col = last_index;
+                    dir = LEFT;
+                }
+            } else {
+                pos.col = res.last_pos.col + 1;
+            }
+        }
+
+        matrix_data.word_datas[i] = word_data;
+    }
+
+    return matrix_data;
+}
+
+MatrixData get_matrix_data(
+    char matrix[MATRIX_SCALE][MATRIX_SCALE],
+    char words[MAX_WORDS][MATRIX_SCALE + 1]
+) {
+    // TODO: Merge vertical and horizontal results in one and return it.
+}
+
 int main() {
     char matrix[MATRIX_SCALE][MATRIX_SCALE] = {
         {'F', 'O', 'O', 'X', 'L', 'C', 'O'},
@@ -186,8 +244,11 @@ int main() {
 
     char words[MAX_WORDS][MATRIX_SCALE + 1] = {"FOO"};
 
-    const MatrixData data = get_vertical_matrix_data(matrix, words);
-    display_matrix_data(data);
+    const MatrixData vertical = get_vertical_matrix_data(matrix, words);
+    display_matrix_data(vertical);
+
+    const MatrixData horizontal = get_horizontal_matrix_data(matrix, words);
+    display_matrix_data(horizontal);
 
     return 0;
 }
