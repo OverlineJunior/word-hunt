@@ -5,7 +5,7 @@
 #include <string.h>
 
 #define MATRIX_SCALE 7
-#define MAX_WORDS 1
+#define MAX_WORDS 3
 
 typedef enum {
     RIGHT,
@@ -128,10 +128,11 @@ MatrixData get_vertical_matrix_data(
 ) {
     const int last_index = MATRIX_SCALE - 1;
     MatrixData matrix_data;
-    Position pos = {0, 0};
-    Direction dir = DOWN;
-
+    
     for (int i = 0; i < MAX_WORDS; i++) {
+        Position pos = {0, 0};
+        Direction dir = DOWN;
+
         char word[MATRIX_SCALE + 1];
         strcpy(word, words[i]);
 
@@ -179,10 +180,11 @@ MatrixData get_horizontal_matrix_data(
 ) {
     const int last_index = MATRIX_SCALE - 1;
     MatrixData matrix_data;
-    Position pos = {0, 0};
-    Direction dir = RIGHT;
 
     for (int i = 0; i < MAX_WORDS; i++) {
+        Position pos = {0, 0};
+        Direction dir = RIGHT;
+
         char word[MATRIX_SCALE + 1];
         strcpy(word, words[i]);
 
@@ -228,27 +230,48 @@ MatrixData get_matrix_data(
     char matrix[MATRIX_SCALE][MATRIX_SCALE],
     char words[MAX_WORDS][MATRIX_SCALE + 1]
 ) {
-    // TODO: Merge vertical and horizontal results in one and return it.
+    const MatrixData vertical_data = get_vertical_matrix_data(matrix, words);
+    const MatrixData horizontal_data = get_horizontal_matrix_data(matrix, words);
+    MatrixData matrix_data;
+
+    for (int i = 0; i < MAX_WORDS; i++) {
+        WordData vert_wdata = vertical_data.word_datas[i];
+        WordData hori_wdata = horizontal_data.word_datas[i];
+
+        WordData merged_wdata = {
+            .count = vert_wdata.count + hori_wdata.count,
+        };
+        strcpy(merged_wdata.word, vert_wdata.word);
+
+        for (int j = 0; j < vert_wdata.count; j++) {
+            merged_wdata.encounters[j] = vert_wdata.encounters[j];
+        }
+
+        for (int j = 0; j < hori_wdata.count; j++) {
+            merged_wdata.encounters[j + vert_wdata.count] = hori_wdata.encounters[j];
+        }
+
+        matrix_data.word_datas[i] = merged_wdata;
+    }
+
+    return matrix_data;
 }
 
 int main() {
     char matrix[MATRIX_SCALE][MATRIX_SCALE] = {
-        {'F', 'O', 'O', 'X', 'L', 'C', 'O'},
-        {'O', 'H', 'A', 'O', 'O', 'F', 'O'},
-        {'O', 'J', 'S', 'I', 'O', 'D', 'F'},
+        {'F', 'O', 'O', 'X', 'L', 'B', 'B'},
+        {'O', 'H', 'A', 'O', 'O', 'A', 'A'},
+        {'O', 'J', 'S', 'I', 'O', 'Z', 'R'},
         {'X', 'F', 'O', 'O', 'H', 'E', 'L'},
-        {'F', 'O', 'L', 'C', 'S', 'B', 'F'},
-        {'O', 'O', 'F', 'J', 'C', 'Q', 'O'},
-        {'O', 'K', 'P', 'F', 'O', 'A', 'O'},
+        {'F', 'O', 'R', 'B', 'A', 'R', 'F'},
+        {'O', 'O', 'A', 'J', 'C', 'Q', 'O'},
+        {'O', 'K', 'B', 'A', 'Z', 'A', 'O'},
     };
 
-    char words[MAX_WORDS][MATRIX_SCALE + 1] = {"FOO"};
+    char words[MAX_WORDS][MATRIX_SCALE + 1] = {"FOO", "BAR", "BAZ"};
 
-    const MatrixData vertical = get_vertical_matrix_data(matrix, words);
-    display_matrix_data(vertical);
-
-    const MatrixData horizontal = get_horizontal_matrix_data(matrix, words);
-    display_matrix_data(horizontal);
+    const MatrixData data = get_matrix_data(matrix, words);
+    display_matrix_data(data);
 
     return 0;
 }
