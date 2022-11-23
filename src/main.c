@@ -1,5 +1,3 @@
-// TODO: Do not allow words with only one character, since it causes a bug and doesnt make sense.
-
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
