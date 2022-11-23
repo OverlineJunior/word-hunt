@@ -131,7 +131,7 @@ int read_words(char words[][MATRIX_SCALE + 1]) {
             "1. Sair\n"
         );
 
-        int n;
+        int n = 2;
         scanf("%u", &n);
         fflush(stdin);
 
