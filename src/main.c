@@ -69,6 +69,8 @@ void load_matrix_data_in_file(MatrixData matrix_data, int word_count) {
 
         fprintf(file_ptr, "\n");
     }
+
+    fclose(file_ptr);
 }
 
 void clear_result_file() {
@@ -369,6 +371,8 @@ int main() {
     const MatrixData data = get_matrix_data(matrix, words, word_count);
     const MatrixData sorted = sort_matrix_data(data, word_count);
     load_matrix_data_in_file(sorted, word_count);
+
+    fclose(file_ptr);
 
     return 0;
 }
