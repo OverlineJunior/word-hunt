@@ -1,8 +1,11 @@
 // NOTE: For now, it is being assumed that the amount of unique words is equal to MAX_WORDS.
+// TODO: Ask for the words to find and replace MAX_WORDS with the amount given *where appropriate*.
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define MATRIX_SCALE 7
 #define MAX_WORDS 3
@@ -40,6 +43,13 @@ typedef struct {
     WordData word_datas[MAX_WORDS];
 } MatrixData;
 
+void assert_msg(int condition, char msg[]) {
+	if (!condition) {
+		puts(msg);
+		exit(1);
+	}
+}
+
 void display_find_first_result(FindFirstResult res) {
     char found[6];
     strcpy(found, res.found == true ? "true" : "false");
@@ -72,6 +82,31 @@ void display_matrix_data(MatrixData matrix_data) {
 
         printf("\n");
     }
+}
+
+void fill_matrix_from_file(char matrix[][MATRIX_SCALE], FILE *file_ptr) {
+	int row = 0, col = 0;
+	char ch;
+
+	do {
+		ch = fgetc(file_ptr);
+
+		if ((ch == ' ') || (int) ch == -1) continue;
+		
+		if (ch == '\n') {
+			assert_msg(col == MATRIX_SCALE, "Nao pode haver menos do que 7 letras em uma linha");
+
+			row++;
+			col = 0;
+		} else {
+			assert_msg(col < MATRIX_SCALE, "Nao pode haver mais do que 7 letras em uma linha");
+
+			matrix[row][col] = toupper(ch);
+			col++;
+		}
+	} while (ch != EOF);
+
+	assert_msg(row < MATRIX_SCALE, "Nao pode haver mais do que 7 linhas");
 }
 
 FindFirstResult find_first(
@@ -258,15 +293,11 @@ MatrixData get_matrix_data(
 }
 
 int main() {
-    char matrix[MATRIX_SCALE][MATRIX_SCALE] = {
-        {'F', 'O', 'O', 'X', 'L', 'B', 'B'},
-        {'O', 'H', 'A', 'O', 'O', 'A', 'A'},
-        {'O', 'J', 'S', 'I', 'O', 'Z', 'R'},
-        {'X', 'F', 'O', 'O', 'H', 'E', 'L'},
-        {'F', 'O', 'R', 'B', 'A', 'R', 'F'},
-        {'O', 'O', 'A', 'J', 'C', 'Q', 'O'},
-        {'O', 'K', 'B', 'A', 'Z', 'A', 'O'},
-    };
+    FILE *file_ptr = fopen("../playground.txt", "r");
+	assert_msg(file_ptr != NULL, "Nao foi possivel encontrar ou abrir o caminho '../playground.txt'");
+
+    char matrix[MATRIX_SCALE][MATRIX_SCALE];
+    fill_matrix_from_file(matrix, file_ptr);
 
     char words[MAX_WORDS][MATRIX_SCALE + 1] = {"FOO", "BAR", "BAZ"};
 
