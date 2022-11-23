@@ -47,22 +47,6 @@ void assert_msg(int condition, char msg[]) {
 	}
 }
 
-void display_find_first_result(FindFirstResult res) {
-    char found[6];
-    strcpy(found, res.found == true ? "true" : "false");
-
-    printf(
-        "Found: %s\n"
-        "FirstPos: {row: %i, col: %i}\n"
-        "LastPos: {row: %i, col: %i}\n",
-        found,
-        res.first_pos.row,
-        res.first_pos.col,
-        res.last_pos.row,
-        res.last_pos.col
-    );
-}
-
 void load_matrix_data_in_file(MatrixData matrix_data, int word_count) {
     FILE *file_ptr = fopen("../result.md", "a");
 
