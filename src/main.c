@@ -6,8 +6,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MATRIX_SCALE 7
-#define MAX_WORDS 3
+#define MATRIX_SCALE 10
+#define MAX_WORDS 10
 
 typedef enum {
     RIGHT,
@@ -93,19 +93,19 @@ void fill_matrix_from_file(char matrix[][MATRIX_SCALE], FILE *file_ptr) {
 		if ((ch == ' ') || (int) ch == -1) continue;
 		
 		if (ch == '\n') {
-			assert_msg(col == MATRIX_SCALE, "Nao pode haver menos do que 7 letras em uma linha");
+			assert_msg(col == MATRIX_SCALE, "Nao pode haver menos do que 10 letras em uma linha");
 
 			row++;
 			col = 0;
 		} else {
-			assert_msg(col < MATRIX_SCALE, "Nao pode haver mais do que 7 letras em uma linha");
+			assert_msg(col < MATRIX_SCALE, "Nao pode haver mais do que 10 letras em uma linha");
 
 			matrix[row][col] = toupper(ch);
 			col++;
 		}
 	} while (ch != EOF);
 
-	assert_msg(row < MATRIX_SCALE, "Nao pode haver mais do que 7 linhas");
+	assert_msg(row < MATRIX_SCALE, "Nao pode haver mais do que 10 linhas");
 }
 
 int read_words(char words[][MATRIX_SCALE + 1]) {
