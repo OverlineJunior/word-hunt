@@ -70,7 +70,11 @@ void load_matrix_data_in_file(MatrixData matrix_data, int word_count) {
 
     for (int i = 0; i < word_count; i++) {
         const WordData word_data = matrix_data.word_datas[i];
-        fprintf(file_ptr, "# '%s' foi encontrado %i vezes:\n", word_data.word, word_data.count);
+
+        char times[6];
+        strcpy(times, word_data.count == 1 ? "vez" : "vezes");
+
+        fprintf(file_ptr, "# '%s' foi encontrado %i %s:\n", word_data.word, word_data.count, times);
 
         for (int j = 0; j < word_data.count; j++) {
             const Encounter enc = word_data.encounters[j];
