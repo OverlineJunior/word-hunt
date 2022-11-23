@@ -108,6 +108,49 @@ void fill_matrix_from_file(char matrix[][MATRIX_SCALE], FILE *file_ptr) {
 	assert_msg(row < MATRIX_SCALE, "Nao pode haver mais do que 7 linhas");
 }
 
+int read_words(char words[][MATRIX_SCALE + 1]) {
+    int count = 0;
+
+    while (true) {
+        printf(
+            "Selecione uma opcao:\n"
+            "0. Dar uma palavra a ser buscada\n"
+            "1. Sair\n"
+        );
+
+        int n;
+        scanf("%u", &n);
+        fflush(stdin);
+
+        if (n == 0) {
+            printf("Entre com a palavra a ser buscada: ");
+
+            char word[MATRIX_SCALE + 1];
+            fgets(word, MATRIX_SCALE, stdin);
+            strupr(word);
+            word[strcspn(word, "\n")] = 0;
+
+            strcpy(words[count], word);
+
+            count++;
+        } else if (n == 1) {
+            if (count == 0) {
+                printf("E necessario entrar com pelo menos 1 palavra\n");
+                continue;
+            }
+
+            break;
+        } else {
+            printf("Numero invalido\n");
+            continue;
+        }
+
+        if (count >= MAX_WORDS) break;
+    }
+
+    return count;
+}
+
 FindFirstResult find_first(
     char word[],
     Position start_pos,
@@ -292,49 +335,6 @@ MatrixData get_matrix_data(
     }
 
     return matrix_data;
-}
-
-int read_words(char words[][MATRIX_SCALE + 1]) {
-    int count = 0;
-
-    while (true) {
-        printf(
-            "Selecione uma opcao:\n"
-            "0. Dar uma palavra a ser buscada\n"
-            "1. Sair\n"
-        );
-
-        int n;
-        scanf("%u", &n);
-        fflush(stdin);
-
-        if (n == 0) {
-            printf("Entre com a palavra a ser buscada: ");
-
-            char word[MATRIX_SCALE + 1];
-            fgets(word, MATRIX_SCALE, stdin);
-            strupr(word);
-            word[strcspn(word, "\n")] = 0;
-
-            strcpy(words[count], word);
-
-            count++;
-        } else if (n == 1) {
-            if (count == 0) {
-                printf("E necessario entrar com pelo menos 1 palavra\n");
-                continue;
-            }
-
-            break;
-        } else {
-            printf("Numero invalido\n");
-            continue;
-        }
-
-        if (count >= MAX_WORDS) break;
-    }
-
-    return count;
 }
 
 int main() {
