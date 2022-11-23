@@ -65,10 +65,12 @@ void display_find_first_result(FindFirstResult res) {
     );
 }
 
-void display_matrix_data(MatrixData matrix_data, int word_count) {
+void load_matrix_data_in_file(MatrixData matrix_data, int word_count) {
+    FILE *file_ptr = fopen("../result.md", "a");
+
     for (int i = 0; i < word_count; i++) {
         const WordData word_data = matrix_data.word_datas[i];
-        printf("'%s' foi encontrado %i vezes:\n", word_data.word, word_data.count);
+        fprintf(file_ptr, "# '%s' foi encontrado %i vezes:\n", word_data.word, word_data.count);
 
         for (int j = 0; j < word_data.count; j++) {
             const Encounter enc = word_data.encounters[j];
@@ -76,10 +78,10 @@ void display_matrix_data(MatrixData matrix_data, int word_count) {
             char dir_str[11];
             strcpy(dir_str, enc.dir == DOWN || enc.dir == UP ? "Vertical" : "Horizontal");
 
-            printf("%u. 1a posicao: (%u, %u)   Direcao: %s\n", j + 1, enc.first_pos.row, enc.first_pos.col, dir_str);
+            fprintf(file_ptr, "%u. 1a posicao: (%u, %u)   Direcao: %s\n", j + 1, enc.first_pos.row, enc.first_pos.col, dir_str);
         }
 
-        printf("\n");
+        fprintf(file_ptr, "\n");
     }
 }
 
@@ -341,6 +343,8 @@ MatrixData get_matrix_data(
 int main() {
     printf("<!> O sistema tambem busca em direcao contraria, entao os resultados podem ser diferentes.\n\n");
 
+    fclose(fopen("../result.md", "w"));
+
     FILE *file_ptr = fopen("../playground.txt", "r");
 	assert_msg(file_ptr != NULL, "Nao foi possivel encontrar ou abrir o caminho '../playground.txt'");
 
@@ -351,7 +355,7 @@ int main() {
     const int word_count = read_words(words);
 
     const MatrixData data = get_matrix_data(matrix, words, word_count);
-    display_matrix_data(data, word_count);
+    load_matrix_data_in_file(data, word_count);
 
     return 0;
 }
