@@ -371,8 +371,6 @@ MatrixData get_matrix_data(
 }
 
 int main() {
-    printf("<!> O sistema tambem busca em direcao contraria, entao os resultados podem ser diferentes.\n\n");
-
     clear_result_file();
 
     FILE *file_ptr = fopen("../playground.txt", "r");
