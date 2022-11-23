@@ -1,5 +1,6 @@
 // NOTE: For now, it is being assumed that the amount of unique words is equal to MAX_WORDS.
 // TODO: Ask for the words to find and replace MAX_WORDS with the amount given *where appropriate*.
+// TODO: Do not allow words with only one character, since it causes a bug and doesnt make sense.
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -292,6 +293,49 @@ MatrixData get_matrix_data(
     return matrix_data;
 }
 
+int read_words(char words[][MATRIX_SCALE + 1]) {
+    int count = 0;
+
+    while (true) {
+        printf(
+            "Selecione uma opcao:\n"
+            "0. Dar uma palavra a ser buscada\n"
+            "1. Sair\n"
+        );
+
+        int n;
+        scanf("%u", &n);
+        fflush(stdin);
+
+        if (n == 0) {
+            printf("Entre com a palavra a ser buscada: ");
+
+            char word[MATRIX_SCALE + 1];
+            fgets(word, MATRIX_SCALE, stdin);
+            strupr(word);
+            word[strcspn(word, "\n")] = 0;
+
+            strcpy(words[count], word);
+
+            count++;
+        } else if (n == 1) {
+            if (count == 0) {
+                printf("E necessario entrar com pelo menos 1 palavra\n");
+                continue;
+            }
+
+            break;
+        } else {
+            printf("Numero invalido\n");
+            continue;
+        }
+
+        if (count >= MAX_WORDS) break;
+    }
+
+    return count;
+}
+
 int main() {
     FILE *file_ptr = fopen("../playground.txt", "r");
 	assert_msg(file_ptr != NULL, "Nao foi possivel encontrar ou abrir o caminho '../playground.txt'");
@@ -299,7 +343,8 @@ int main() {
     char matrix[MATRIX_SCALE][MATRIX_SCALE];
     fill_matrix_from_file(matrix, file_ptr);
 
-    char words[MAX_WORDS][MATRIX_SCALE + 1] = {"FOO", "BAR", "BAZ"};
+    char words[MAX_WORDS][MATRIX_SCALE + 1];
+    const int word_count = read_words(words);
 
     const MatrixData data = get_matrix_data(matrix, words);
     display_matrix_data(data);
