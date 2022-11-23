@@ -1,5 +1,3 @@
-// NOTE: For now, it is being assumed that the amount of unique words is equal to MAX_WORDS.
-// TODO: Ask for the words to find and replace MAX_WORDS with the amount given *where appropriate*.
 // TODO: Do not allow words with only one character, since it causes a bug and doesnt make sense.
 
 #include <stdbool.h>
@@ -67,8 +65,8 @@ void display_find_first_result(FindFirstResult res) {
     );
 }
 
-void display_matrix_data(MatrixData matrix_data) {
-    for (int i = 0; i < MAX_WORDS; i++) {
+void display_matrix_data(MatrixData matrix_data, int word_count) {
+    for (int i = 0; i < word_count; i++) {
         const WordData word_data = matrix_data.word_datas[i];
         printf("'%s' foi encontrado %i vezes:\n", word_data.word, word_data.count);
 
@@ -160,12 +158,13 @@ FindFirstResult find_first(
 
 MatrixData get_vertical_matrix_data(
     char matrix[MATRIX_SCALE][MATRIX_SCALE],
-    char words[MAX_WORDS][MATRIX_SCALE + 1]
+    char words[MAX_WORDS][MATRIX_SCALE + 1],
+    int word_count
 ) {
     const int last_index = MATRIX_SCALE - 1;
     MatrixData matrix_data;
     
-    for (int i = 0; i < MAX_WORDS; i++) {
+    for (int i = 0; i < word_count; i++) {
         Position pos = {0, 0};
         Direction dir = DOWN;
 
@@ -212,12 +211,13 @@ MatrixData get_vertical_matrix_data(
 
 MatrixData get_horizontal_matrix_data(
     char matrix[MATRIX_SCALE][MATRIX_SCALE],
-    char words[MAX_WORDS][MATRIX_SCALE + 1]
+    char words[MAX_WORDS][MATRIX_SCALE + 1],
+    int word_count
 ) {
     const int last_index = MATRIX_SCALE - 1;
     MatrixData matrix_data;
 
-    for (int i = 0; i < MAX_WORDS; i++) {
+    for (int i = 0; i < word_count; i++) {
         Position pos = {0, 0};
         Direction dir = RIGHT;
 
@@ -264,13 +264,14 @@ MatrixData get_horizontal_matrix_data(
 
 MatrixData get_matrix_data(
     char matrix[MATRIX_SCALE][MATRIX_SCALE],
-    char words[MAX_WORDS][MATRIX_SCALE + 1]
+    char words[MAX_WORDS][MATRIX_SCALE + 1],
+    int word_count
 ) {
-    const MatrixData vertical_data = get_vertical_matrix_data(matrix, words);
-    const MatrixData horizontal_data = get_horizontal_matrix_data(matrix, words);
+    const MatrixData vertical_data = get_vertical_matrix_data(matrix, words, word_count);
+    const MatrixData horizontal_data = get_horizontal_matrix_data(matrix, words, word_count);
     MatrixData matrix_data;
 
-    for (int i = 0; i < MAX_WORDS; i++) {
+    for (int i = 0; i < word_count; i++) {
         WordData vert_wdata = vertical_data.word_datas[i];
         WordData hori_wdata = horizontal_data.word_datas[i];
 
@@ -337,6 +338,8 @@ int read_words(char words[][MATRIX_SCALE + 1]) {
 }
 
 int main() {
+    printf("<!> O sistema tambem busca em direcao contraria, entao os resultados podem ser diferentes.\n\n");
+
     FILE *file_ptr = fopen("../playground.txt", "r");
 	assert_msg(file_ptr != NULL, "Nao foi possivel encontrar ou abrir o caminho '../playground.txt'");
 
@@ -346,8 +349,8 @@ int main() {
     char words[MAX_WORDS][MATRIX_SCALE + 1];
     const int word_count = read_words(words);
 
-    const MatrixData data = get_matrix_data(matrix, words);
-    display_matrix_data(data);
+    const MatrixData data = get_matrix_data(matrix, words, word_count);
+    display_matrix_data(data, word_count);
 
     return 0;
 }
