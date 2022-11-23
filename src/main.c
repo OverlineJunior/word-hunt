@@ -85,6 +85,13 @@ void load_matrix_data_in_file(MatrixData matrix_data, int word_count) {
     }
 }
 
+void clear_result_file() {
+    FILE *file_ptr = fopen("../result.md", "w");
+    assert_msg(file_ptr != NULL, "Nao foi possivel abrir o caminho ../result.md");
+
+    fclose(file_ptr);
+}
+
 void fill_matrix_from_file(char matrix[][MATRIX_SCALE], FILE *file_ptr) {
 	int row = 0, col = 0;
 	char ch;
@@ -199,6 +206,27 @@ FindFirstResult find_first(
     }
 
     return res;
+}
+
+MatrixData sort_matrix_data(MatrixData matrix_data, int word_count) {
+    while (true) {
+        int did_swap = false;
+
+        for (int i = 0; i < word_count; i++) {
+            WordData wdata = matrix_data.word_datas[i];
+            WordData next_wdata = matrix_data.word_datas[i + 1];
+
+            if (next_wdata.count > wdata.count) {
+                matrix_data.word_datas[i] = next_wdata;
+                matrix_data.word_datas[i + 1] = wdata;
+                did_swap = true;
+            }
+        }
+
+        if (!did_swap) break;
+    }
+
+    return matrix_data;
 }
 
 MatrixData get_vertical_matrix_data(
@@ -343,10 +371,10 @@ MatrixData get_matrix_data(
 int main() {
     printf("<!> O sistema tambem busca em direcao contraria, entao os resultados podem ser diferentes.\n\n");
 
-    fclose(fopen("../result.md", "w"));
+    clear_result_file();
 
     FILE *file_ptr = fopen("../playground.txt", "r");
-	assert_msg(file_ptr != NULL, "Nao foi possivel encontrar ou abrir o caminho '../playground.txt'");
+	assert_msg(file_ptr != NULL, "Nao foi possivel abrir o caminho '../playground.txt'");
 
     char matrix[MATRIX_SCALE][MATRIX_SCALE];
     fill_matrix_from_file(matrix, file_ptr);
@@ -355,7 +383,8 @@ int main() {
     const int word_count = read_words(words);
 
     const MatrixData data = get_matrix_data(matrix, words, word_count);
-    load_matrix_data_in_file(data, word_count);
+    const MatrixData sorted = sort_matrix_data(data, word_count);
+    load_matrix_data_in_file(sorted, word_count);
 
     return 0;
 }
