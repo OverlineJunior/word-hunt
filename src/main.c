@@ -305,6 +305,7 @@ MatrixData get_horizontal_matrix_data(
     return matrix_data;
 }
 
+// Returns the merge of the vertical and horizontal data.
 MatrixData get_matrix_data(
     char matrix[MATRIX_SCALE][MATRIX_SCALE],
     char words[MAX_WORDS][MATRIX_SCALE + 1],
