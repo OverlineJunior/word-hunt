@@ -87,8 +87,9 @@ void fill_matrix_from_file(char matrix[][MATRIX_SCALE], FILE *file_ptr) {
 	do {
 		ch = fgetc(file_ptr);
 
-		if ((ch == ' ') || (int) ch == -1) continue;
-		
+        // Skip space and odd characters.
+		if ((ch == ' ') || (int) ch == -1 || (int) ch == 13) continue;
+
 		if (ch == '\n') {
 			assert_msg(col == MATRIX_SCALE, "Nao pode haver menos do que 10 letras em uma linha");
 
@@ -117,7 +118,10 @@ int read_words(char words[][MATRIX_SCALE + 1]) {
 
         int n = 2;
         scanf("%u", &n);
-        fflush(stdin);
+
+        // Fully clear stdin.
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF); 
 
         if (n == 0) {
             printf("Entre com a palavra a ser buscada: ");
