@@ -119,7 +119,7 @@ int read_words(char words[][MATRIX_SCALE + 1]) {
         int n = 2;
         scanf("%u", &n);
 
-        // Fully clear stdin.
+        // Discard trailing content from scanf.
         int c;
         while ((c = getchar()) != '\n' && c != EOF); 
 
